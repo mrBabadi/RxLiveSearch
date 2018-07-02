@@ -55,7 +55,13 @@ public class MainActivity extends AppCompatActivity implements SearchResults {
                     }
                 })
                 .distinctUntilChanged()
-                .subscribeOn(AndroidSchedulers.mainThread())
+                .observeOn(AndroidSchedulers.mainThread())
+                .doOnNext(new Consumer<String>() {
+                    @Override
+                    public void accept(String s) throws Exception {
+                        onShow();
+                    }
+                })
                 .switchMap(new Function<String, Observable<List<TownModel>>>() {
                     @Override
                     public Observable<List<TownModel>> apply(String query) throws Exception {
@@ -69,15 +75,14 @@ public class MainActivity extends AppCompatActivity implements SearchResults {
                     public void accept(List<TownModel> result) throws Exception {
                         Log.e("MAIN_MAIN", result.size() + " /");
                         queryResults(result);
+                        onHide();
                     }
                 });
     }
 
     private Observable<List<TownModel>> dataFromNetwork(final String query) {
         return ApiClient.getClient().searchTown(query)
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribeOn(Schedulers.newThread())
-                .observeOn(AndroidSchedulers.mainThread());
+                .subscribeOn(Schedulers.io());
     }
 
     private void queryResults(List<TownModel> result) {

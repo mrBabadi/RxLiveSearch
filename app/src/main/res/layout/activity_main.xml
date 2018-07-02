@@ -10,17 +10,19 @@
         android:id="@+id/searchVieww"
         android:layout_width="match_parent"
         android:layout_height="48dp"
+        android:layout_marginLeft="42dp"
+        android:layout_marginStart="42dp"
         android:textDirection="rtl"
+        app:closeIcon="@drawable/ic_cancel_black_24dp"
         app:iconifiedByDefault="false"
-        app:searchHintIcon="@null"
-        app:queryHint="Search Town In Persian"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="0.0"
-        app:searchIcon="@drawable/ic_location_city_black_24dp"
-        app:closeIcon="@drawable/ic_cancel_black_24dp">
+        app:queryHint="Search Town In Persian"
+        app:searchHintIcon="@null"
+        app:searchIcon="@drawable/ic_location_city_black_24dp">
 
     </android.support.v7.widget.SearchView>
 
