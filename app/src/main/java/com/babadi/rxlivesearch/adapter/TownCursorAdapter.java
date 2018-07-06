@@ -6,6 +6,7 @@ import android.support.annotation.NonNull;
 import android.support.v4.widget.CursorAdapter;
 import android.support.v7.widget.SearchView;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,12 +16,10 @@ import com.babadi.rxlivesearch.R;
 
 public class TownCursorAdapter extends CursorAdapter {
 
-    private Context context;
     private SearchView searchView;
 
     public TownCursorAdapter(@NonNull Context context, Cursor cursor, SearchView searchView) {
         super(context, cursor, false);
-//        this.context = context;
         this.searchView = searchView;
     }
 
@@ -37,10 +36,16 @@ public class TownCursorAdapter extends CursorAdapter {
         TextView itemTextView = view.findViewById(R.id.row_item_txt);
         itemTextView.setText(townName);
 
+        if (townID.equalsIgnoreCase("-1")) {
+            itemTextView.setGravity(Gravity.CENTER);
+        }
+
         view.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Log.e("TOWN_NAME", townName + " // " + townID);
+                if (townID.equalsIgnoreCase("-1")) {
+                    return;
+                }
                 searchView.setQuery(townName,false);
                 searchView.clearFocus();
             }

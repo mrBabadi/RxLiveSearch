@@ -1,6 +1,5 @@
 package com.babadi.rxlivesearch;
 
-import android.annotation.SuppressLint;
 import android.database.MatrixCursor;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
@@ -19,8 +18,8 @@ import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 import io.reactivex.Observable;
-import io.reactivex.Scheduler;
 import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.functions.Consumer;
 import io.reactivex.functions.Function;
@@ -74,11 +73,22 @@ public class MainActivity extends AppCompatActivity implements SearchResults {
                     @Override
                     public void accept(List<TownModel> result) throws Exception {
                         Log.e("MAIN_MAIN", result.size() + " /");
+                        onHide();
+                        if (result.size() == 0) {
+                            notFoundResult();
+                            return;
+                        }
                         queryResults(result);
+                    }
+                }, new Consumer<Throwable>() {
+                    @Override
+                    public void accept(Throwable throwable) throws Exception {
+                        Log.e("Exception HERE", throwable.getMessage());
                         onHide();
                     }
                 });
     }
+
 
     private Observable<List<TownModel>> dataFromNetwork(final String query) {
         return ApiClient.getClient().searchTown(query)
@@ -104,6 +114,23 @@ public class MainActivity extends AppCompatActivity implements SearchResults {
         searchView.setSuggestionsAdapter(new TownCursorAdapter(this, cursor, searchView));
     }
 
+    private void notFoundResult() {
+        // Cursor
+        String[] columns = new String[]{"_id", "townID", "townName"};
+        Object[] temp = new Object[]{0, "default", "default"};
+
+        MatrixCursor cursor = new MatrixCursor(columns);
+
+        temp[0] = -1;
+        temp[1] = "-1";
+        temp[2] = "No Results Found!";
+
+        cursor.addRow(temp);
+
+        searchView.setSuggestionsAdapter(new TownCursorAdapter(this, cursor, searchView));
+
+    }
+
 
     @Override
     public void onShow() {
@@ -119,11 +146,6 @@ public class MainActivity extends AppCompatActivity implements SearchResults {
     public void onFailedToFind() {
     }
 
-    @Override
-    public void onResult(List<TownModel> townsList, CharSequence chara) {
-        /*townAdapter.clear();*/
-
-    }
 
     @Override
     protected void onDestroy() {

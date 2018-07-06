@@ -17,43 +17,6 @@ import io.reactivex.subjects.PublishSubject;
 
 public class RxSearchEngine {
 
-    private Disposable dispose;
-    private SearchResults searchListener;
-
-    public RxSearchEngine(SearchResults searchListener) {
-        this.searchListener = searchListener;
-    }
-
-    public void search(Observable<String> stringObservable) {
-        stringObservable.observeOn(AndroidSchedulers.mainThread())
-                .doOnNext(new Consumer<CharSequence>() {
-                    @Override
-                    public void accept(final CharSequence s){
-                        if (searchListener == null) {
-                            return;
-                        }
-                        if (s.toString().length() < 3) {
-                            return;
-                        }
-                        searchListener.onShow();
-                        dispose = ApiClient.getClient().searchTown(s.toString())
-                                .subscribeOn(Schedulers.newThread())
-                                .observeOn(AndroidSchedulers.mainThread())
-                                .subscribe(new Consumer<List<TownModel>>() {
-                                    @Override
-                                    public void accept(List<TownModel> townList) throws Exception {
-                                        if (searchListener == null) {
-                                            return;
-                                        }
-                                        searchListener.onHide();
-                                        searchListener.onResult(townList,s);
-                                    }
-                                });
-                    }
-
-                }).subscribe();
-    }
-
     public static Observable<String> fromView(SearchView searchView) {
 
         final PublishSubject<String> subject = PublishSubject.create();
@@ -73,15 +36,5 @@ public class RxSearchEngine {
         });
 
         return subject;
-    }
-
-    public void disposeSearchObservable() {
-        if (dispose != null) {
-            if (!dispose.isDisposed()) {
-                dispose.dispose();
-                dispose = null;
-            }
-        }
-        searchListener = null;
     }
 }

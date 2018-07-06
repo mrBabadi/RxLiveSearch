@@ -5,8 +5,4 @@ public interface ShowAndDismiss {
     void onShow();
 
     void onHide();
-
-    void onFailedToFind();
-
-
 }
